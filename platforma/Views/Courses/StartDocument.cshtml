@@ -1,0 +1,35 @@
+﻿@model platforma.Models.Document
+
+@{
+    ViewBag.Title = "StartDocument";
+}
+
+<h2>StartDocument</h2>
+
+<div>
+    <h4>Document</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+
+
+    </dl>
+
+    <a href="https://smallpdf.com/shared#st=803e13d8-3aca-4cb2-aaee-dc55973520f6&fn=exercise_1.pdf&ct=1591455540247&tl=share-document&rf=link">asd</a>
+    <a href="~/Data/exercise_1.pdf">klik</a>
+   
+
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,251 @@
+﻿using platforma.Models;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace platforma.Controllers
+{
+    public class CoursesController : Controller
+    {
+        DataContext db = new DataContext();
+
+        // GET: Courses
+        public ActionResult Index()
+        {
+            string query = "SELECT c.*, 0 as price, 0 as AvgGrade " +
+                "FROM platforma.courses c " +
+                //"LEFT JOIN platforma.prices p ON p.courseid = c.id " +
+                "ORDER BY c.name";
+           
+            var data = db.Courses.SqlQuery(query).ToList();
+
+            return View(data);
+        }
+
+        // GET: Courses/Details/5
+        public ActionResult Details(int id)
+        {
+            //TODO details na kursevi vrati koj instruktor e
+            // i mozhe kolku studenti ima total
+            
+            string query = "SELECT c.*, p.price , 0 as AvgGrade " +
+                "FROM platforma.courses c " +
+                "INNER JOIN platforma.prices p ON p.courseid = c.id " +
+                "WHERE c.id = @p0 " +
+                "ORDER BY c.name ";
+
+            var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
+            data.Videos = new List<Video>();
+            data.Documents = new List<Document>();
+
+            string queryReviews = "SELECT c.* " +
+                "FROM platforma.course_review c " +
+                "WHERE c.courseid = @p0 ";
+
+            var dataReviews = db.Reviews.SqlQuery(queryReviews, id).ToList();
+
+            float sum = 0;
+
+            for (int i=0; i<dataReviews.Count(); i++)
+            {
+                sum += dataReviews[i].Grade;
+            }
+
+            data.AvgGrade = sum / dataReviews.Count();
+            return View(data);
+        }
+
+        //GET /Courses/WatchCourse/5
+        public ActionResult WatchCourse(int id)
+        {
+            //prima id za kurs i vrakja koj kurs koi videa gi ima
+            string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade " +
+                "FROM platforma.courses c " +
+                "WHERE c.id = @p0 ";
+
+            
+            var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
+
+            string queryVideos = "SELECT v.* " +
+                "FROM platforma.videos v " +
+                "WHERE v.courseid = @p0 " +
+                "ORDER BY v.name ";
+
+            var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
+
+            string queryDocuments = "SELECT d.* " +
+                "FROM platforma.documents d " +
+                "WHERE d.courseid = @p0 ";
+
+            var dataDocuments = db.Documents.SqlQuery(queryDocuments, id).ToList();
+
+
+            data.Videos = dataVideos;
+            data.Documents = dataDocuments;
+
+            return View(data);
+        }
+
+        // GET: /Courses/PlayVideo/5
+        public ActionResult PlayVideo(int id)
+        {
+            string queryVideo = "SELECT v.* " +
+                "FROM platforma.videos v " +
+                "WHERE v.id = @p0 ";
+
+            var dataVideo = db.Videos.SqlQuery(queryVideo, id).SingleOrDefault();
+            return View(dataVideo);
+        }
+
+
+        
+        /*// GET: /Courses/StartDocument/5
+        public ActionResult StartDocument(int id)
+        {
+            string queryDocument = "SELECT d.* " +
+                "FROM platforma.documents d " +
+                "WHERE d.id = @p0 ";
+
+            var dataDocument = db.Documents.SqlQuery(queryDocument, id).SingleOrDefault();
+            return View(dataDocument);
+        }*/
+
+        // GET: Courses/Create
+        public ActionResult Create()
+        {
+            //SAMO INSTRUKTOR
+            return View();
+        }
+
+        // POST: Courses/Create
+        [HttpPost]
+        public ActionResult Create(Course collection)
+        {
+            //SAMO INSTRUKTOR
+            //smeni id na instruktorot shto kreira
+            try
+            {
+                List<object> lst = new List<object>();
+                lst.Add(collection.InstructorId);
+                lst.Add(collection.Name);
+                lst.Add(collection.Description);
+                //lst.Add(collection.Price);
+                object[] allItems = lst.ToArray();
+
+                string queryCourses = "INSERT INTO platforma.courses(instructorid, name, description) " +
+                    "VALUES (@p0, @p1, @p2)";
+                
+                
+                int outputCourses = db.Database.ExecuteSqlCommand(queryCourses, allItems);
+                //int outputCourses = db.Courses.SqlQuery(queryCourses, allItems);
+
+                string courseQuery = "SELECT c.*, 0 as price, 0 as avgGrade " +
+                    "FROM platforma.courses c " +
+                    "WHERE c.instructorid = @p0 " +
+                    "AND c.name = @p1 " +
+                    "AND c.description = @p2 ";
+
+                var newCourse = db.Courses.SqlQuery(courseQuery, allItems).SingleOrDefault();
+
+                string queryPrices = "CALL price_courses(" + newCourse.Id + ", " + collection.Price + ")";
+                int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
+
+                string queryVideos = "INSERT INTO platforma.videos(courseid, name, pathvideo, pathimg) " +
+                    "VALUES (@p0, @p1, @p2, @p3) ";
+    
+                foreach (Video v in collection.Videos)
+                {
+                    if(v.Name is null || v.Name == "")
+                    {
+                        break;
+                    }
+
+                    List<object> lista = new List<object>();
+                    lista.Add(newCourse.Id);
+                    lista.Add(v.Name);
+                    lista.Add(v.PathVideo);
+                    lista.Add(v.PathImg);
+                    object[] listaO = lista.ToArray();
+                    int outputVideos = db.Database.ExecuteSqlCommand(queryVideos, listaO);
+                }
+                
+
+                string queryDocuments = "INSERT INTO platforma.document(courseid, name, path) " +
+                    "VALUES (@p0, @p1, @p2) ";
+
+                foreach (Document d in collection.Documents)
+                {
+                    if (d.Name is null || d.Name == "")
+                    {
+                        break;
+                    }
+
+                    List<object> lista = new List<object>();
+                    lista.Add(newCourse.Id);
+                    lista.Add(d.Name);
+                    lista.Add(d.Path);
+                    object[] listaO = lista.ToArray();
+                    int outputDocuments = db.Database.ExecuteSqlCommand(queryDocuments, newCourse.Id, d.Name, d.Path);
+                }
+                
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Courses/Edit/5
+        public ActionResult Edit(int id)
+        {
+            //SAMO INSTRUKTOR
+            return View();
+        }
+
+        // POST: Courses/Edit/5
+        [HttpPost]
+        public ActionResult Edit(int id, FormCollection collection)
+        {
+            //SAMO INSTRUKTOR
+            try
+            {
+                // TODO: Add update logic here
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Courses/Delete/5
+        public ActionResult Delete(int id)
+        {
+            //SAMO INSTRUKTOR
+            return View();
+        }
+
+        // POST: Courses/Delete/5
+        [HttpPost]
+        public ActionResult Delete(int id, FormCollection collection)
+        {
+            //SAMO INSTRUKTOR
+            try
+            {
+                // TODO: Add delete logic here
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
+}

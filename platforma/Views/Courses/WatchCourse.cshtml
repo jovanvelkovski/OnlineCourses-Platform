@@ -1,0 +1,63 @@
+﻿@model platforma.Models.Course
+
+@{
+    ViewBag.Title = "WatchCourse";
+}
+
+<h2>WatchCourse</h2>
+
+<div>
+    <h4>Course</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+       
+    </dl>
+    <table>
+        <tr>
+            <th>
+                Videos:
+            </th>
+        </tr>
+        @foreach (var item in Model.Videos)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Play", "PlayVideo", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+        @foreach (var item in Model.Documents)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a href="@item.Path">Start</a>
+                </td>
+            </tr>
+        }
+    </table>
+   
+
+   
+</div>
+<br />
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
