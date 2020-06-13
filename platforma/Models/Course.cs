@@ -22,5 +22,6 @@ namespace platforma.Models
         public List<Document> Documents { get; set; }
         [DefaultValue(0)]
         public float AvgGrade { get; set; }
+        public string Categories { get; set; }
     }
 }

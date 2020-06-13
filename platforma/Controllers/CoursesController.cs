@@ -15,7 +15,7 @@ namespace platforma.Controllers
         // GET: Courses
         public ActionResult Index()
         {
-            string query = "SELECT c.*, 0 as price, 0 as AvgGrade " +
+            string query = "SELECT c.*, 0 as price, 0 as AvgGrade, c.name as Categories " +
                 "FROM platforma.courses c " +
                 //"LEFT JOIN platforma.prices p ON p.courseid = c.id " +
                 "ORDER BY c.name";
@@ -31,7 +31,7 @@ namespace platforma.Controllers
             //TODO details na kursevi vrati koj instruktor e
             // i mozhe kolku studenti ima total
             
-            string query = "SELECT c.*, p.price , 0 as AvgGrade " +
+            string query = "SELECT c.*, p.price , 0 as AvgGrade, c.name as Categories " +
                 "FROM platforma.courses c " +
                 "INNER JOIN platforma.prices p ON p.courseid = c.id " +
                 "WHERE c.id = @p0 " +
@@ -62,7 +62,7 @@ namespace platforma.Controllers
         public ActionResult WatchCourse(int id)
         {
             //prima id za kurs i vrakja koj kurs koi videa gi ima
-            string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade " +
+            string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade, c.name as Categories " +
                 "FROM platforma.courses c " +
                 "WHERE c.id = @p0 ";
 
@@ -85,7 +85,6 @@ namespace platforma.Controllers
 
             data.Videos = dataVideos;
             data.Documents = dataDocuments;
-
             return View(data);
         }
 
@@ -117,6 +116,12 @@ namespace platforma.Controllers
         public ActionResult Create()
         {
             //SAMO INSTRUKTOR
+            string queryCategories = "SELECT * " +
+                "FROM platforma.categories c ";
+
+            var categories = db.Categories.SqlQuery(queryCategories).ToList();
+            ViewBag.categories = categories;
+      
             return View();
         }
 
@@ -126,8 +131,10 @@ namespace platforma.Controllers
         {
             //SAMO INSTRUKTOR
             //smeni id na instruktorot shto kreira
+            //dodadi kategorii
             try
             {
+                //course attributes
                 List<object> lst = new List<object>();
                 lst.Add(collection.InstructorId);
                 lst.Add(collection.Name);
@@ -138,11 +145,10 @@ namespace platforma.Controllers
                 string queryCourses = "INSERT INTO platforma.courses(instructorid, name, description) " +
                     "VALUES (@p0, @p1, @p2)";
                 
-                
                 int outputCourses = db.Database.ExecuteSqlCommand(queryCourses, allItems);
-                //int outputCourses = db.Courses.SqlQuery(queryCourses, allItems);
 
-                string courseQuery = "SELECT c.*, 0 as price, 0 as avgGrade " +
+                //find the new course and update it
+                string courseQuery = "SELECT c.*, 0 as price, 0 as avgGrade, c.name as Categories " +
                     "FROM platforma.courses c " +
                     "WHERE c.instructorid = @p0 " +
                     "AND c.name = @p1 " +
@@ -150,15 +156,29 @@ namespace platforma.Controllers
 
                 var newCourse = db.Courses.SqlQuery(courseQuery, allItems).SingleOrDefault();
 
-                string queryPrices = "CALL price_courses(" + newCourse.Id + ", " + collection.Price + ")";
-                int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
+
+                //categories
+                string[] categories = collection.Categories.Split(',');
+                for (int i = 0; i < categories.Count(); i++)
+                {
+                    string queryCategory = "SELECT * " +
+                        "FROM platforma.categories c " +
+                        "WHERE c.name = \'" + categories[i] + "\'";
+                    var cat = db.Categories.SqlQuery(queryCategory).SingleOrDefault();
+
+                    string queryInsert = "INSERT INTO platforma.category_courses(courseid, categoryid) " +
+                        "VALUES (" + newCourse.Id + ", " + cat.Id + ") ";
+                    int outputQuery = db.Database.ExecuteSqlCommand(queryInsert);
+                }
+
+                //video attributes
                 string queryVideos = "INSERT INTO platforma.videos(courseid, name, pathvideo, pathimg) " +
                     "VALUES (@p0, @p1, @p2, @p3) ";
-    
+
                 foreach (Video v in collection.Videos)
                 {
-                    if(v.Name is null || v.Name == "")
+                    if (v.Name is null || v.Name == "")
                     {
                         break;
                     }
@@ -171,8 +191,8 @@ namespace platforma.Controllers
                     object[] listaO = lista.ToArray();
                     int outputVideos = db.Database.ExecuteSqlCommand(queryVideos, listaO);
                 }
-                
 
+                //document attributes
                 string queryDocuments = "INSERT INTO platforma.document(courseid, name, path) " +
                     "VALUES (@p0, @p1, @p2) ";
 
@@ -188,9 +208,11 @@ namespace platforma.Controllers
                     lista.Add(d.Name);
                     lista.Add(d.Path);
                     object[] listaO = lista.ToArray();
-                    int outputDocuments = db.Database.ExecuteSqlCommand(queryDocuments, newCourse.Id, d.Name, d.Path);
+                    int outputDocuments = db.Database.ExecuteSqlCommand(queryDocuments, listaO);
                 }
-                
+
+                string queryPrices = "CALL priceCourse(" + newCourse.Id + ", " + collection.Price + ");";
+                int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
                 return RedirectToAction("Index");
             }
@@ -228,7 +250,49 @@ namespace platforma.Controllers
         public ActionResult Delete(int id)
         {
             //SAMO INSTRUKTOR
-            return View();
+            string query = "SELECT c.*, p.price, 0 as avgGrade, 'asd' as Categories " +
+                "FROM platforma.courses c " +
+                "INNER JOIN platforma.prices p ON p.courseid = c.id " +
+                "WHERE c.id = @p0";
+
+            var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
+
+            string queryVideos = "SELECT v.* " +
+                "FROM platforma.videos v " +
+                "WHERE v.courseid = @p0";
+            var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
+            data.Videos = dataVideos;
+
+            string queryDocuments = "SELECT d.* " +
+                "FROM platforma.documents d " +
+                "WHERE d.courseid = @p0";
+            var dataDocuments = db.Documents.SqlQuery(queryDocuments, id).ToList();
+            data.Documents = dataDocuments;
+
+            string queryReviews = "SELECT c.* " +
+                "FROM platforma.course_review c " +
+                "WHERE c.courseid = @p0 ";
+            var dataReviews = db.Reviews.SqlQuery(queryReviews, id).ToList();
+            float sum = 0;
+            for (int i = 0; i < dataReviews.Count(); i++)
+            {
+                sum += dataReviews[i].Grade;
+            }
+            data.AvgGrade = sum / dataReviews.Count();
+
+            string queryCategories = "SELECT c.* " +
+                "FROM platforma.categories c " +
+                "INNER JOIN platforma.category_courses cc ON cc.categoryid = c.id " +
+                "WHERE cc.courseid = @p0";
+            List<Category> dataCategories = db.Categories.SqlQuery(queryCategories, id).ToList();
+            string categories = "";
+            foreach (Category c in dataCategories)
+            {
+                categories += c.Name += ",";
+            }
+            data.Categories = categories.Substring(0, categories.Length - 1);
+
+            return View(data);
         }
 
         // POST: Courses/Delete/5

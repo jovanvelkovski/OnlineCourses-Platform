@@ -303,6 +303,7 @@
     <Content Include="Views\Courses\WatchCourse.cshtml" />
     <Content Include="Views\Courses\PlayVideo.cshtml" />
     <Content Include="Views\Courses\StartDocument.cshtml" />
+    <Content Include="Views\Courses\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Videos\" />

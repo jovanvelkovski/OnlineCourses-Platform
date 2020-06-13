@@ -7,10 +7,10 @@
 <h2>Create</h2>
 
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
 <div class="form-horizontal">
     <h4>Course</h4>
     <hr />
@@ -47,8 +47,34 @@
         </div>
     </div>
 
+    <div class="form-group">
+        @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @{
+                if (ViewBag.categories != null)
+                {
+                    foreach (platforma.Models.Category c in ViewBag.categories)
+                    {
+                        @*<input type="checkbox" id="@c.Id" name="@c.Name" />
+                    <label for="@c.Id">@c.Name</label>
+                    <br />*@
+                        <p>@c.Name</p>
+                    }
+                    <br />
+                    <p>
+                        <i>
+                            Insert categories delimited with a comma
+                            Example: Web Programming,Data Science,Graphic Design
+                        </i>
+                    </p>
+                    @Html.EditorFor(model => model.Categories, new { htmlAttributes = new { @class = "form-control" } })
 
-    
+                }
+            }
+            
+        </div>
+    </div>
+
     <div class="form-group">
         @Html.LabelFor(model => model.Videos, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
