@@ -6,9 +6,12 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <style>
+       
+    </style>
 
 </head>
-<body>
+<body style="background: url(/Data/usblaptop_background.jpg) no-repeat fixed; background-size: 100%; font-size: 16px; font-weight: 700;">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -35,7 +38,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - Jovan Velkovski</p>
         </footer>
     </div>
 

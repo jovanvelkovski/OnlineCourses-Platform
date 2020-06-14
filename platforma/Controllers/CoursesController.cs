@@ -226,30 +226,6 @@ namespace platforma.Controllers
         public ActionResult Edit(int id)
         {
             //SAMO INSTRUKTOR
-            return View();
-        }
-
-        // POST: Courses/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            //SAMO INSTRUKTOR
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Courses/Delete/5
-        public ActionResult Delete(int id)
-        {
-            //SAMO INSTRUKTOR
             string query = "SELECT c.*, p.price, 0 as avgGrade, 'asd' as Categories " +
                 "FROM platforma.courses c " +
                 "INNER JOIN platforma.prices p ON p.courseid = c.id " +
@@ -295,14 +271,55 @@ namespace platforma.Controllers
             return View(data);
         }
 
-        // POST: Courses/Delete/5
+        // POST: Courses/Edit/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Edit(Course collection)
         {
             //SAMO INSTRUKTOR
             try
             {
-                // TODO: Add delete logic here
+                //course
+                List<object> lst = new List<object>();
+                lst.Add(collection.Name);
+                lst.Add(collection.Description);
+                lst.Add(collection.Id);
+                object[] allItems = lst.ToArray();
+                string queryCourses = "UPDATE platforma.courses c " +
+                    "SET name = @p0, description = @p1 " +
+                    "WHERE id = @p2 ";
+                int outputCourses = db.Database.ExecuteSqlCommand(queryCourses, allItems);
+
+                //price
+                string queryPrices = "CALL priceCourse(" + collection.Id + ", " + collection.Price + ");";
+                int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
+
+                /*//categories
+                string[] categories = collection.Categories.Split(',');
+                for (int i = 0; i < categories.Count(); i++)
+                {
+                    string queryCategory = "SELECT * " +
+                        "FROM platforma.categories c " +
+                        "WHERE c.name = \'" + categories[i] + "\'";
+                    var cat = db.Categories.SqlQuery(queryCategory).SingleOrDefault();
+
+                    List<object> lst2 = new List<object>();
+                    lst2.Add(collection.Id);
+                    lst2.Add(cat.Id);
+                    object[] allItems2 = lst.ToArray();
+                    string queryCategoryCourses = "SELECT c.* " +
+                        "FROM platforma.categories c " +
+                        "INNER JOIN platforma.category_courses cc ON cc.categoryid = c.id " +
+                        "WHERE cc.courseid = @p0 AND cc.categoryid = @p1 ";
+                    var categoriesData = db.Categories.SqlQuery(queryCategoryCourses, allItems2).ToList();
+i                   if (!categoriesData.Contains(cat))
+                    {
+                        string queryInsert = "INSERT INTO platforma.category_courses(courseid, categoryid) " +
+                                                "VALUES (" + collection.Id + ", " + cat.Id + ") ";
+                        int outputQuery = db.Database.ExecuteSqlCommand(queryInsert);
+                    }
+                }*/
+
+                //videos
 
                 return RedirectToAction("Index");
             }
@@ -311,5 +328,6 @@ namespace platforma.Controllers
                 return View();
             }
         }
+
     }
 }

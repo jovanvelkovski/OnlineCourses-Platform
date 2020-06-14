@@ -36,7 +36,7 @@ namespace platforma.Controllers
 
             var data = db.Categories.SqlQuery(query, id).SingleOrDefault();
 
-            string query2 = "SELECT cou.*, p.price, 0 as AvgGrade " +
+            string query2 = "SELECT cou.*, p.price, 0 as AvgGrade, 'asd' as Categories " +
                 "FROM platforma.category_courses cc " +
                 "INNER JOIN platforma.courses cou ON cc.courseid = cou.id " +
                 "INNER JOIN platforma.prices p ON p.courseid = cou.id " +

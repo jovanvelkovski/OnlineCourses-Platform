@@ -4,23 +4,12 @@
     ViewBag.Title = "PlayVideo";
 }
 
-<h2>PlayVideo</h2>
+<h3>@Model.Name</h3>
 
 <div>
-    <h4>Video</h4>
+
     <hr />
     <dl class="dl-horizontal">
-       
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <br />
         <dd>
             <video width="700" height="350" controls>
               <source src="@Model.PathVideo" type="video/mp4">
@@ -31,7 +20,3 @@
 
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

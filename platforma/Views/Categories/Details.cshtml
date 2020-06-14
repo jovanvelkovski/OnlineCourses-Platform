@@ -4,24 +4,12 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>Details for Category:</h2>
+<h3>@Model.Name</h3>
 
 <div>
-    <h4>Category</h4>
     <hr />
-    <table>
- 
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-
-
-            <td>
-                @Html.DisplayFor(model => model.Name)
-            </td>
-        </tr>
-        
+    <table>        
         <tr>
             <th>
                 Courses:

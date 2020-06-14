@@ -240,6 +240,10 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Data\coffee_laptop_background.jpg" />
+    <Content Include="Data\hustle_background.jpg" />
+    <Content Include="Data\laptop_background.jpg" />
+    <Content Include="Data\usblaptop_background.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -304,6 +308,7 @@
     <Content Include="Views\Courses\PlayVideo.cshtml" />
     <Content Include="Views\Courses\StartDocument.cshtml" />
     <Content Include="Views\Courses\Delete.cshtml" />
+    <Content Include="Views\Courses\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Videos\" />

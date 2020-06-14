@@ -4,10 +4,10 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
-
+<h2>Details for:</h2>
+<h3>@Model.Name</h3>
 <div>
-    <h4>Course</h4>
+
     <hr />
     <dl class="dl-horizontal">
 
@@ -44,7 +44,7 @@
             @Html.DisplayFor(model => model.AvgGrade)
         </dd>
     </dl>
-    
+
 </div>
 <p>
     @Html.ActionLink("Buy Course", "Buy", new { id = Model.Id }) |
