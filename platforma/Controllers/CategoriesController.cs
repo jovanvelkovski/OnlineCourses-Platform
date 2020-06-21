@@ -27,7 +27,6 @@ namespace platforma.Controllers
         }
 
         // GET: Category/Details/5
-       
         public ActionResult Details(int id)
         {
             string query = "SELECT * " +
@@ -47,10 +46,8 @@ namespace platforma.Controllers
             data.Courses = data2;
             
             return View(data);
-
-            
-
         }
+
 
         // GET: Category/Create
         public ActionResult Create()

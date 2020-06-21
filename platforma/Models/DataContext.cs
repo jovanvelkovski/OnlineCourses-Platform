@@ -14,5 +14,8 @@ namespace platforma.Models
         public DbSet<Video> Videos { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Forum> Forums { get; set; }
+        public DbSet<ForumComment> Comments { get; set; }
+
     }
 }

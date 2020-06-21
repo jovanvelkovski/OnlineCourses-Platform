@@ -206,6 +206,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
+    <Compile Include="Controllers\ForumsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\VideosController.cs" />
@@ -217,6 +218,8 @@
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\DataContext.cs" />
     <Compile Include="Models\Document.cs" />
+    <Compile Include="Models\Forum.cs" />
+    <Compile Include="Models\ForumComment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Review.cs" />
@@ -309,6 +312,10 @@
     <Content Include="Views\Courses\StartDocument.cshtml" />
     <Content Include="Views\Courses\Delete.cshtml" />
     <Content Include="Views\Courses\Edit.cshtml" />
+    <Content Include="Views\Forums\Index.cshtml" />
+    <Content Include="Views\Forums\Details.cshtml" />
+    <Content Include="Views\Forums\Create.cshtml" />
+    <Content Include="Views\Forums\AddComment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Videos\" />

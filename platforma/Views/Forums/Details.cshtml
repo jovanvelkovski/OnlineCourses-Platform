@@ -1,0 +1,42 @@
+﻿@model platforma.Models.Forum
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details for:</h2>
+<h3>@Model.Description</h3>
+
+<div>
+    <hr />
+    <p>
+        @Html.ActionLink("Add Comment", "AddComment")
+    </p>
+    <hr />
+    <table>
+        <thead>
+            <tr style="width: 100%">
+                <th>Comment</th>
+                <th>User</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.Comments)
+        {
+            <tr>
+                <td style="width: 70%">
+                    @Html.DisplayFor(modelItem => item.Comment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateComment)
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index", "Forums")
+</p>
