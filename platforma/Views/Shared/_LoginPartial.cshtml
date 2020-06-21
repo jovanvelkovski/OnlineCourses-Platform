@@ -15,8 +15,18 @@
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
-    </ul>
+<ul class="nav navbar-nav navbar-right">
+    @{ if (Session["userType"] == null)
+        {
+            <li>@Html.ActionLink("Register", "Register", "Users", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+            <li>@Html.ActionLink("Log in", "Login", "Users", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        }
+        else
+        {   
+            <li style="color:lightgray; text-align:center; padding-top:8%;">Hello @Session["firstName"]!</li>
+            <li>@Html.ActionLink("Logout", "Logout", "Users", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        }
+    }
+
+</ul>
 }

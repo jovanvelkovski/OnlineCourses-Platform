@@ -16,6 +16,6 @@ namespace platforma.Models
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Forum> Forums { get; set; }
         public DbSet<ForumComment> Comments { get; set; }
-
+        public DbSet<User> Users { get; set; }
     }
 }

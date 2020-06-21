@@ -45,24 +45,24 @@ namespace platforma.Controllers
         }
 
         // POST: Forums/AddComment
-        [HttpPost]
+        /*[HttpPost]
         public ActionResult AddComment(ForumComment newComment)
         {
 
             // instruktor ili student
             try
             {
-                /*string query = "INSERT INTO platforma.forums(description) " +
+                *//*string query = "INSERT INTO platforma.forums(description) " +
                     "VALUES (@p0)";
                 int output = db.Database.ExecuteSqlCommand(query, newForum.Description);
 
-                return RedirectToAction("Index");*/
+                return RedirectToAction("Index");*//*
             }
             catch
             {
                 return View();
             }
-        }
+        }*/
 
         // GET: Forums/Create
         public ActionResult Create()
