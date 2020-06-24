@@ -10,7 +10,7 @@
 <div>
     
     @{
-        if (Session["userType"] != null)
+        if (Session["userType"].Equals("student") || Session["userType"].Equals("instructor"))
         {
         <p>
             @Html.ActionLink("Add Comment", "AddComment", new { id = Model.Id })

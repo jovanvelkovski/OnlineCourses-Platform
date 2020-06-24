@@ -4,7 +4,7 @@
     ViewBag.Title = "MyCourses";
 }
 
-<h2>MyCourses</h2>
+<h2>My Courses:</h2>
 
 <table class="table">
 
@@ -13,9 +13,14 @@
         <td>
             @Html.DisplayFor(modelItem => item.Name)
         </td>
-        <td>
-            @Html.ActionLink("Start Course", "WatchCourse", new { id = item.Id })
-        </td>
+        @{
+            if (Session["userType"].Equals("student"))
+            {
+                <td>
+                    @Html.ActionLink("Start Course", "WatchCourse", new { id = item.Id })
+                </td>
+            }
+        }
     </tr>
 }
 

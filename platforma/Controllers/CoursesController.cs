@@ -68,12 +68,25 @@ namespace platforma.Controllers
         // GET: /MyCourses
         public ActionResult MyCourses()
         {
-            string queryCourses = "SELECT sc.id, sc.instructorid, sc.name, sc.description, sc.price, sc.avggrade, sc.categories " +
+            var data = new object();
+            if (Session["userType"].Equals("student"))
+            {
+                string queryCourses = "SELECT sc.id, sc.instructorid, sc.name, sc.description, sc.price, sc.avggrade, sc.categories " +
                 "FROM platforma.student_courses sc " +
                 "WHERE sc.studentid = @p0 " +
-                "ORDER BY sc.name ";    
-            int studentid = (int)Session["studentId"];
-            var data = db.Courses.SqlQuery(queryCourses, studentid).ToList();
+                "ORDER BY sc.name ";
+                int studentid = (int)Session["studentId"];
+                data = db.Courses.SqlQuery(queryCourses, studentid).ToList();
+            }
+            else if (Session["userType"].Equals("instructor"))
+            {
+                string queryCourses = "SELECT c.*, 0 as price, 0 as avgGrade, c.name as categories " +
+                "FROM platforma.courses c " +
+                "WHERE c.instructorid = @p0 " +
+                "ORDER BY c.name ";
+                int instructorid = (int)Session["instructorId"];
+                data = db.Courses.SqlQuery(queryCourses, instructorid).ToList();
+            }
             
             return View(data);
         }

@@ -47,11 +47,14 @@
 
 </div>
 <p>
-    @Html.ActionLink("Buy Course", "BuyCourse", new { id = Model.Id }) |
     @{
-        if (Session["userType"] == "admin" || Session["userType"] == "instructor")
+        if (Session["userType"].Equals("student"))
         {
-                @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+            @Html.ActionLink("Buy Course", "BuyCourse", new { id = Model.Id })
+        }
+        if (Session["userType"].Equals("instructor"))
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
         }
     }
     @Html.ActionLink("Back to List", "Index")
