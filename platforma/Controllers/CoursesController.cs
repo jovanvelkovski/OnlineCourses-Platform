@@ -48,28 +48,74 @@ namespace platforma.Controllers
             return View(data);
         }
 
+        // GET /Courses/BuyCourse
+        public ActionResult BuyCourse(int id)
+        {
+            int studentId = (int)Session["studentId"];
+            string query = "SELECT platforma.checkBoughtCourse(" + studentId + ", " + id + ")";
+            int output = db.Database.ExecuteSqlCommand(query);
+            if (output != 1)
+            {
+                //studentid, price, courseid
+                string queryPrice = "SELECT * FROM platforma.prices p WHERE p.courseid = " + id;
+                var price = db.Prices.SqlQuery(queryPrice).SingleOrDefault();
+                string queryProc = "SELECT platforma.student_buys_course(" + studentId + ", " + price.Price + ", " + id + ")";
+                int output2 = db.Database.ExecuteSqlCommand(queryProc);
+            }
+            return RedirectToAction("MyCourses", "Courses");
+        }
+
+        // GET: /MyCourses
+        public ActionResult MyCourses()
+        {
+            string queryCourses = "SELECT sc.id, sc.instructorid, sc.name, sc.description, sc.price, sc.avggrade, sc.categories " +
+                "FROM platforma.student_courses sc " +
+                "WHERE sc.studentid = @p0 " +
+                "ORDER BY sc.name ";    
+            int studentid = (int)Session["studentId"];
+            var data = db.Courses.SqlQuery(queryCourses, studentid).ToList();
+            
+            return View(data);
+        }
+
+
         //GET /Courses/WatchCourse/5
         public ActionResult WatchCourse(int id)
         {
-            string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade, c.name as Categories " +
+            int studentId = (int)Session["studentId"];
+            string queryBC = "SELECT platforma.checkBoughtCourse(" + studentId + ", " + id + ")";
+            int output = db.Database.ExecuteSqlCommand(queryBC);
+           // if (output == 1)
+            //{
+                string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade, c.name as Categories " +
                 "FROM platforma.courses c " +
                 "WHERE c.id = @p0 ";
-            var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
+                var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
 
-            string queryVideos = "SELECT v.* " +
-                "FROM platforma.videos v " +
-                "WHERE v.courseid = @p0 " +
-                "ORDER BY v.name ";
-            var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
-            data.Videos = dataVideos;
+                string queryVideos = "SELECT v.* " +
+                    "FROM platforma.videos v " +
+                    "WHERE v.courseid = @p0 " +
+                    "ORDER BY v.name ";
+                var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
+                data.Videos = dataVideos;
 
-            string queryDocuments = "SELECT d.* " +
-                "FROM platforma.documents d " +
-                "WHERE d.courseid = @p0 ";
-            var dataDocuments = db.Documents.SqlQuery(queryDocuments, id).ToList();
-            data.Documents = dataDocuments;
+                string queryDocuments = "SELECT d.* " +
+                    "FROM platforma.documents d " +
+                    "WHERE d.courseid = @p0 ";
+                var dataDocuments = db.Documents.SqlQuery(queryDocuments, id).ToList();
+                data.Documents = dataDocuments;
 
-            return View(data);
+                return View(data);
+           // }
+          //  else
+           // {
+           //     return RedirectToAction("WatchCourseNotBought");
+           // }
+        }
+
+        public ActionResult WatchCourseNotBought()
+        {
+            return View();
         }
 
         // GET: /Courses/PlayVideo/5
@@ -104,7 +150,8 @@ namespace platforma.Controllers
             {
                 //course attributes
                 List<object> lst = new List<object>();
-                lst.Add(collection.InstructorId);
+                int instructorId = (int)Session["instructorId"];
+                lst.Add(instructorId);
                 lst.Add(collection.Name);
                 lst.Add(collection.Description);
                 object[] allItems = lst.ToArray();
@@ -185,16 +232,32 @@ namespace platforma.Controllers
         // GET: Courses/Edit/5
         public ActionResult Edit(int id)
         {
-            //SAMO INSTRUKTOR
+            int responsibleId;
+            if (Session["instructorId"] != null)
+            {
+                responsibleId = (int)Session["instructorId"];
+            }
+            else
+            {
+                responsibleId = (int)Session["adminId"];
+            }
+
             string query = "SELECT * " +
                 "FROM platforma.coursesview cv " +
-                "WHERE cv.id = @p0";
+                "WHERE cv.id = @p0 " +
+                "ORDER BY cv.price desc " +
+                "LIMIT 1";
 
             var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
+            
+            if (responsibleId != data.InstructorId)
+            {
+                return RedirectToAction("CourseNotOwner");
+            }
 
             string queryVideos = "SELECT v.* " +
-                "FROM platforma.videos v " +
-                "WHERE v.courseid = @p0";
+                            "FROM platforma.videos v " +
+                            "WHERE v.courseid = @p0";
             var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
             data.Videos = dataVideos;
 
@@ -234,7 +297,6 @@ namespace platforma.Controllers
         [HttpPost]
         public ActionResult Edit(Course collection)
         {
-            //SAMO INSTRUKTOR
             try
             {
                 //course
@@ -258,6 +320,11 @@ namespace platforma.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult CourseNotOwner()
+        {
+            return View();
         }
 
     }

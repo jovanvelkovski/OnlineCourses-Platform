@@ -32,10 +32,14 @@ namespace platforma.Controllers
                 lst.Add(newUser.Password);
                 object[] allItems = lst.ToArray();
 
-                string registerQuery = "INSERT INTO platforma.users(firstname, lastname, sex, email, username, password) " +
+                string registerQueryUser = "INSERT INTO platforma.users(firstname, lastname, sex, email, username, password) " +
                     "VALUES (@p0, @p1, @p2, @p3, @p4, @p5) ";
 
-                int output = db.Database.ExecuteSqlCommand(registerQuery, allItems);
+                int output = db.Database.ExecuteSqlCommand(registerQueryUser, allItems);
+
+                /*string registerQueryStudent = "INSERT INTO platforma.students(userid, age, country, tokens) " +
+                    "VALUES (@p0, @p1, @p2, @p3, @p4, @p5) ";
+                int output = db.Database.ExecuteSqlCommand(registerQueryStudent, allItems);*/
 
                 return RedirectToAction("Index", "Home");
             }
@@ -61,8 +65,6 @@ namespace platforma.Controllers
                 int loginSuccessful = db.Database.ExecuteSqlCommand(query);
                 if (loginSuccessful != 0)
                 {
-                    Session["userType"] = "student";
-
                     string queryName = "SELECT * " +
                         "FROM platforma.users u " +
                         "WHERE u.username = \'" + user.Username + "\'";
@@ -70,6 +72,49 @@ namespace platforma.Controllers
                     Session["firstName"] = person.FirstName;
                     Session["username"] = person.Username;
                     Session["userId"] = person.Id;
+
+                    string queryStudent = "SELECT * " +
+                        "FROM platforma.students s " +
+                        "WHERE s.userid = " + person.Id;
+                    string queryInstructor = "SELECT * " +
+                        "FROM platforma.instructors i " +
+                        "WHERE i.userid = " + person.Id;
+                    string queryAdmin = "SELECT * " +
+                        "FROM platforma.admins a " +
+                        "WHERE a.userid = " + person.Id;
+
+                    var student = db.Students.SqlQuery(queryStudent).SingleOrDefault();
+                    var instructor = db.Instructors.SqlQuery(queryInstructor).SingleOrDefault();
+                    var admin = db.Admins.SqlQuery(queryAdmin).SingleOrDefault();
+                    if (student != null)
+                    {
+                        Session["studentId"] = student.Id;
+                        Session["userType"] = "student";
+                    }
+                    else
+                    {
+                        Session["studentId"] = null;
+                    }
+
+                    if (instructor != null)
+                    {
+                        Session["instructorId"] = instructor.Id;
+                        Session["userType"] = "instructor";
+                    }
+                    else
+                    {
+                        Session["instructorId"] = null;
+                    }
+
+                    if (admin != null)
+                    {
+                        Session["adminId"] = admin.Id;
+                        Session["userType"] = "admin";
+                    }
+                    else
+                    {
+                        Session["adminId"] = null;
+                    }
                 }
                 else
                 {

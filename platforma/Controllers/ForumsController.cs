@@ -39,30 +39,45 @@ namespace platforma.Controllers
         }
 
         // GET: Forums/AddComment
-        public ActionResult AddComment()
+        public ActionResult AddComment(int id)
         {
+            Session["forumId"] = id;
             return View();
         }
 
         // POST: Forums/AddComment
-        /*[HttpPost]
+        [HttpPost]
         public ActionResult AddComment(ForumComment newComment)
         {
-
             // instruktor ili student
             try
             {
-                *//*string query = "INSERT INTO platforma.forums(description) " +
-                    "VALUES (@p0)";
-                int output = db.Database.ExecuteSqlCommand(query, newForum.Description);
+                if (Session["studentId"] != null)
+                {
+                    int studentId = (int)Session["studentId"];
+                    int forumId = (int)Session["forumId"];
+                    string queryAddComment = "INSERT INTO platforma.forums_students(forumid, studentid, comment) " +
+                        "VALUES(" + forumId + ", " + studentId + ", \'" + newComment.Comment + "\')" ;
+                    int output = db.Database.ExecuteSqlCommand(queryAddComment);
 
-                return RedirectToAction("Index");*//*
+                }
+                else
+                {
+                    int instructorId = (int)Session["instructorId"];
+                    int forumId = (int)Session["forumId"];
+                    string queryAddComment = "INSERT INTO platforma.forums_instructors(forumid, instructorid, comment) " +
+                        "VALUES(" + forumId + ", " + instructorId + ", \'" + newComment.Comment + "\')";
+                    int output = db.Database.ExecuteSqlCommand(queryAddComment);
+                }
+
+                string _redirect = "Details/" + (int)Session["forumId"];
+                return RedirectToAction(_redirect);
             }
             catch
             {
                 return View();
             }
-        }*/
+        }
 
         // GET: Forums/Create
         public ActionResult Create()

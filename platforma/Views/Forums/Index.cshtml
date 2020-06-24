@@ -6,9 +6,16 @@
 
 <h2>Forums</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@{
+    if (Session["userType"] != null)
+    {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
+}
+
+
 <table class="table">
     @foreach (var item in Model)
     {

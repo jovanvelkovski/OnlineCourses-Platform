@@ -215,6 +215,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\DataContext.cs" />
@@ -222,8 +223,12 @@
     <Compile Include="Models\Forum.cs" />
     <Compile Include="Models\ForumComment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Instructor.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\Price.cs" />
     <Compile Include="Models\Review.cs" />
+    <Compile Include="Models\Student.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Video.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -320,6 +325,9 @@
     <Content Include="Views\Forums\AddComment.cshtml" />
     <Content Include="Views\Users\Register.cshtml" />
     <Content Include="Views\Users\Login.cshtml" />
+    <Content Include="Views\Courses\MyCourses.cshtml" />
+    <Content Include="Views\Courses\WatchCourseNotBought.cshtml" />
+    <Content Include="Views\Courses\CourseNotOwner.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Videos\" />

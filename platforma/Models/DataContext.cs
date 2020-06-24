@@ -17,5 +17,9 @@ namespace platforma.Models
         public DbSet<Forum> Forums { get; set; }
         public DbSet<ForumComment> Comments { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Instructor> Instructors { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<PriceCourse> Prices { get; set; }
     }
 }

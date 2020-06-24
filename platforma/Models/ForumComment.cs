@@ -10,9 +10,10 @@ namespace platforma.Models
     {
         [Key]
         public int Id { get; set; }
+        //public int whoId { get; set; }
         public string Comment { get; set; }
         public DateTime DateComment { get; set; }
         public string User { get; set; }
-
+        public int ForumId { get; set; }
     }
 }

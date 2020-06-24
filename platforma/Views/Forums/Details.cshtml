@@ -8,10 +8,15 @@
 <h3>@Model.Description</h3>
 
 <div>
-    <hr />
-    <p>
-        @Html.ActionLink("Add Comment", "AddComment")
-    </p>
+    
+    @{
+        if (Session["userType"] != null)
+        {
+        <p>
+            @Html.ActionLink("Add Comment", "AddComment", new { id = Model.Id })
+        </p>
+        }
+    }
     <hr />
     <table>
         <thead>
@@ -24,7 +29,7 @@
         @foreach (var item in Model.Comments)
         {
             <tr>
-                <td style="width: 70%">
+                <td style="width: 60%">
                     @Html.DisplayFor(modelItem => item.Comment)
                 </td>
                 <td>

@@ -22,9 +22,10 @@ else
             <li>@Html.ActionLink("Log in", "Login", "Users", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
         }
         else
-        {   
-            <li style="color:lightgray; text-align:center; padding-top:8%;">Hello @Session["firstName"]!</li>
-            <li>@Html.ActionLink("Logout", "Logout", "Users", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        {
+            <li style="color:lightgray; text-align:center; padding-top:5%;">Hello @Session["firstName"]!</li>
+            <li>@Html.ActionLink("My Courses", "MyCourses", "Courses", routeValues: null, htmlAttributes: new { id = "myCoursesLink" })</li>
+            <li>@Html.ActionLink("Logout", "Logout", "Users", routeValues: null, htmlAttributes: new { id = "logoutLink" })</li>
         }
     }
 

@@ -1,0 +1,22 @@
+﻿@model IEnumerable<platforma.Models.Course>
+
+@{
+    ViewBag.Title = "MyCourses";
+}
+
+<h2>MyCourses</h2>
+
+<table class="table">
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.ActionLink("Start Course", "WatchCourse", new { id = item.Id })
+        </td>
+    </tr>
+}
+
+</table>
