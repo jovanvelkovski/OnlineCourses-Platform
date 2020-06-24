@@ -37,17 +37,74 @@ namespace platforma.Controllers
 
                 int output = db.Database.ExecuteSqlCommand(registerQueryUser, allItems);
 
-                /*string registerQueryStudent = "INSERT INTO platforma.students(userid, age, country, tokens) " +
-                    "VALUES (@p0, @p1, @p2, @p3, @p4, @p5) ";
-                int output = db.Database.ExecuteSqlCommand(registerQueryStudent, allItems);*/
+                string queryGetId = "SELECT * FROM platforma.users WHERE username=\'" + newUser.Username + "\'";
+                var user = db.Users.SqlQuery(queryGetId).SingleOrDefault();
+                Session["userId"] = user.Id;
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("ChooseUserType");
             }
             catch
             {
                 return View();
             }
         }
+
+        // GET: Users/ChooseUserType
+        public ActionResult ChooseUserType()
+        {
+            return View();
+        }
+
+        // GET: Users/RegisterStudent
+        public ActionResult RegisterStudent()
+        {
+            return View();
+        }
+
+        // POST: Users/RegisterStudent
+        [HttpPost]
+        public ActionResult RegisterStudent(Student student)
+        {
+            try
+            {
+                int id = (int)Session["userId"];
+                string registerStudent = "INSERT INTO platforma.students(userid, age, country) " +
+                    "VALUES (" + id + ", " + student.Age + ", \'" + student.Country + "\')";
+                int output = db.Database.ExecuteSqlCommand(registerStudent);
+
+                return RedirectToAction("Login", "Users");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Users/RegisterInstructor
+        public ActionResult RegisterInstructor()
+        {
+            return View();
+        }
+
+        // Post: Users/RegisterInstructor
+        [HttpPost]
+        public ActionResult RegisterInstructor(Instructor instructor)
+        {
+            try
+            {
+                int id = (int)Session["userId"];
+                string registerInstructor = "INSERT INTO platforma.instructors(userid, age, country, adminid) " +
+                    "VALUES (" + id + ", " + instructor.Age + ", \'" + instructor.Country + "\', 1)"; 
+                int output = db.Database.ExecuteSqlCommand(registerInstructor);
+
+                return RedirectToAction("Login", "Users");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
 
         // GET: Users/Login
         public ActionResult Login()
