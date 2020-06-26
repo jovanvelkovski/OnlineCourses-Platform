@@ -8,13 +8,16 @@
 <h3>@Model.Description</h3>
 
 <div>
-    
+
     @{
-        if (Session["userType"].Equals("student") || Session["userType"].Equals("instructor"))
+        if (Session["userType"] != null)
         {
-        <p>
-            @Html.ActionLink("Add Comment", "AddComment", new { id = Model.Id })
-        </p>
+            if (Session["userType"].Equals("student") || Session["userType"].Equals("instructor"))
+            {
+                <p>
+                    @Html.ActionLink("Add Comment", "AddComment", new { id = Model.Id })
+                </p>
+            }
         }
     }
     <hr />

@@ -15,14 +15,13 @@ namespace platforma.Controllers
         DataContext db = new DataContext();
 
         // GET: Category
-        [AllowAnonymous]
         public ActionResult Index()
         {
             string query = "SELECT * " +
                 "FROM platforma.categories c " +
                 "ORDER BY c.name";
-
             var data = db.Categories.SqlQuery(query).ToList();
+
             return View(data);
         }
 
@@ -32,22 +31,16 @@ namespace platforma.Controllers
             string query = "SELECT * " +
                 "FROM platforma.categories c " +
                 "WHERE c.id = @p0 ";
-
             var data = db.Categories.SqlQuery(query, id).SingleOrDefault();
 
-            string query2 = "SELECT cou.*, p.price, 0 as AvgGrade, 'asd' as Categories " +
-                "FROM platforma.category_courses cc " +
-                "INNER JOIN platforma.courses cou ON cc.courseid = cou.id " +
-                "INNER JOIN platforma.prices p ON p.courseid = cou.id " +
-                "WHERE cc.categoryid = @p0 " +
-                "ORDER BY cou.name";
-
+            string query2 = "SELECT * " +
+                "FROM platforma.category_details cd " +
+                "WHERE cd.categoryid = @p0 ";
             var data2 = db.Courses.SqlQuery(query2, id).ToList();
             data.Courses = data2;
             
             return View(data);
         }
-
 
         // GET: Category/Create
         public ActionResult Create()
@@ -61,13 +54,8 @@ namespace platforma.Controllers
         {
             try
             {
-                List<object> lst = new List<object>();
-                lst.Add(collection.Name);
-                object[] allItems = lst.ToArray();
-                string query = "INSERT INTO platforma.categories(name) " +
-                    "VALUES (@p0)";
-
-                int output = db.Database.ExecuteSqlCommand(query, allItems);
+                string queryInsert = "CALL platforma.insert_category(\'" + collection.Name + "\')";
+                int output = db.Database.ExecuteSqlCommand(queryInsert);
 
                 return RedirectToAction("Index");
             }
@@ -81,9 +69,10 @@ namespace platforma.Controllers
         public ActionResult Edit(int id)
         {
             string query = "SELECT * " +
-            "FROM platforma.categories c " +
-            "WHERE c.id = @p0";
+                "FROM platforma.categories c " +
+                "WHERE c.id = @p0";
             var data = db.Categories.SqlQuery(query, id).SingleOrDefault();
+
             return View(data);
         }
 
@@ -93,15 +82,8 @@ namespace platforma.Controllers
         {
             try
             {
-                List<object> lst = new List<object>();
-                lst.Add(collection.Name);
-                lst.Add(collection.Id);
-                object[] allItems = lst.ToArray();
-                string query = "UPDATE platforma.categories c " +
-                    "SET name = @p0 " +
-                    "WHERE id = @p1";
-
-                int output = db.Database.ExecuteSqlCommand(query, allItems);
+                string queryUpdate = "CALL platforma.update_category(\'" + collection.Name + "\', " + collection.Id + ")";
+                int output = db.Database.ExecuteSqlCommand(queryUpdate);
 
                 return RedirectToAction("Index");
             }
@@ -111,13 +93,16 @@ namespace platforma.Controllers
             }
         }
 
+        /* uncomment if needed Delete Category functions
+        
         // GET: Category/Delete/5
         public ActionResult Delete(int id)
         {
             string query = "SELECT * " +
-            "FROM platforma.categories c " +
-            "WHERE c.id = @p0";
+                "FROM platforma.categories c " +
+                "WHERE c.id = @p0";
             var data = db.Categories.SqlQuery(query, id).SingleOrDefault();
+
             return View(data);
         }
 
@@ -127,14 +112,8 @@ namespace platforma.Controllers
         {
             try
             {
-                List<object> lst = new List<object>();
-                lst.Add(collection.Id);
-                object[] allItems = lst.ToArray();
-                string query = "DELETE " +
-                    "FROM platforma.categories c " +
-                    "WHERE id = @p0";
-
-                int output = db.Database.ExecuteSqlCommand(query, allItems);
+                string queryDelete = "CALL platforma.delete_category(" + collection.Id + ")";
+                int output = db.Database.ExecuteSqlCommand(queryDelete);
 
                 return RedirectToAction("Index");
             }
@@ -142,6 +121,6 @@ namespace platforma.Controllers
             {
                 return View();
             }
-        }
+        }*/
     }
 }

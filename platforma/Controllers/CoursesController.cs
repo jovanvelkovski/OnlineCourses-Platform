@@ -56,7 +56,6 @@ namespace platforma.Controllers
             int output = db.Database.ExecuteSqlCommand(query);
             if (output != 1)
             {
-                //studentid, price, courseid
                 string queryPrice = "SELECT * FROM platforma.prices p WHERE p.courseid = " + id;
                 var price = db.Prices.SqlQuery(queryPrice).SingleOrDefault();
                 string queryProc = "SELECT platforma.student_buys_course(" + studentId + ", " + price.Price + ", " + id + ")";
@@ -72,18 +71,18 @@ namespace platforma.Controllers
             if (Session["userType"].Equals("student"))
             {
                 string queryCourses = "SELECT sc.id, sc.instructorid, sc.name, sc.description, sc.price, sc.avggrade, sc.categories " +
-                "FROM platforma.student_courses sc " +
-                "WHERE sc.studentid = @p0 " +
-                "ORDER BY sc.name ";
+                    "FROM platforma.student_courses sc " +
+                    "WHERE sc.studentid = @p0 " +
+                    "ORDER BY sc.name ";
                 int studentid = (int)Session["studentId"];
                 data = db.Courses.SqlQuery(queryCourses, studentid).ToList();
             }
             else if (Session["userType"].Equals("instructor"))
             {
                 string queryCourses = "SELECT c.*, 0 as price, 0 as avgGrade, c.name as categories " +
-                "FROM platforma.courses c " +
-                "WHERE c.instructorid = @p0 " +
-                "ORDER BY c.name ";
+                    "FROM platforma.courses c " +
+                    "WHERE c.instructorid = @p0 " +
+                    "ORDER BY c.name ";
                 int instructorid = (int)Session["instructorId"];
                 data = db.Courses.SqlQuery(queryCourses, instructorid).ToList();
             }
@@ -91,39 +90,32 @@ namespace platforma.Controllers
             return View(data);
         }
 
-
         //GET /Courses/WatchCourse/5
         public ActionResult WatchCourse(int id)
         {
             int studentId = (int)Session["studentId"];
             string queryBC = "SELECT platforma.checkBoughtCourse(" + studentId + ", " + id + ")";
             int output = db.Database.ExecuteSqlCommand(queryBC);
-           // if (output == 1)
-            //{
-                string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade, c.name as Categories " +
+
+            string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade, c.name as Categories " +
                 "FROM platforma.courses c " +
                 "WHERE c.id = @p0 ";
-                var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
+            var data = db.Courses.SqlQuery(query, id).SingleOrDefault();
 
-                string queryVideos = "SELECT v.* " +
-                    "FROM platforma.videos v " +
-                    "WHERE v.courseid = @p0 " +
-                    "ORDER BY v.name ";
-                var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
-                data.Videos = dataVideos;
+            string queryVideos = "SELECT v.* " +
+                "FROM platforma.videos v " +
+                "WHERE v.courseid = @p0 " +
+                "ORDER BY v.name ";
+            var dataVideos = db.Videos.SqlQuery(queryVideos, id).ToList();
+            data.Videos = dataVideos;
 
-                string queryDocuments = "SELECT d.* " +
-                    "FROM platforma.documents d " +
-                    "WHERE d.courseid = @p0 ";
-                var dataDocuments = db.Documents.SqlQuery(queryDocuments, id).ToList();
-                data.Documents = dataDocuments;
+            string queryDocuments = "SELECT d.* " +
+                "FROM platforma.documents d " +
+                "WHERE d.courseid = @p0 ";
+            var dataDocuments = db.Documents.SqlQuery(queryDocuments, id).ToList();
+            data.Documents = dataDocuments;
 
-                return View(data);
-           // }
-          //  else
-           // {
-           //     return RedirectToAction("WatchCourseNotBought");
-           // }
+            return View(data);
         }
 
         public ActionResult WatchCourseNotBought()
@@ -145,7 +137,6 @@ namespace platforma.Controllers
         // GET: Courses/Create
         public ActionResult Create()
         {
-            //SAMO INSTRUKTOR
             string queryCategories = "SELECT * " +
                 "FROM platforma.categories c ";
             var categories = db.Categories.SqlQuery(queryCategories).ToList();
@@ -158,7 +149,6 @@ namespace platforma.Controllers
         [HttpPost]
         public ActionResult Create(Course collection)
         {
-            //SAMO INSTRUKTOR
             try
             {
                 //course attributes
@@ -168,6 +158,7 @@ namespace platforma.Controllers
                 lst.Add(collection.Name);
                 lst.Add(collection.Description);
                 object[] allItems = lst.ToArray();
+                //PROCEDURE
                 string queryCourses = "INSERT INTO platforma.courses(instructorid, name, description) " +
                     "VALUES (@p0, @p1, @p2)";        
                 int outputCourses = db.Database.ExecuteSqlCommand(queryCourses, allItems);
@@ -189,12 +180,14 @@ namespace platforma.Controllers
                         "WHERE c.name = \'" + categories[i] + "\'";
                     var cat = db.Categories.SqlQuery(queryCategory).SingleOrDefault();
 
+                    //PROCEDURE
                     string queryInsert = "INSERT INTO platforma.category_courses(courseid, categoryid) " +
                         "VALUES (" + newCourse.Id + ", " + cat.Id + ") ";
                     int outputQuery = db.Database.ExecuteSqlCommand(queryInsert);
                 }
 
                 //video attributes
+                //PROCEDURE
                 string queryVideos = "INSERT INTO platforma.videos(courseid, name, pathvideo, pathimg) " +
                     "VALUES (@p0, @p1, @p2, @p3) ";
 
@@ -214,7 +207,8 @@ namespace platforma.Controllers
                 }
 
                 //document attributes
-                string queryDocuments = "INSERT INTO platforma.document(courseid, name, path) " +
+                //PROCEDURE
+                string queryDocuments = "INSERT INTO platforma.documents(courseid, name, path) " +
                     "VALUES (@p0, @p1, @p2) ";
 
                 foreach (Document d in collection.Documents)
@@ -291,7 +285,6 @@ namespace platforma.Controllers
             }
             data.AvgGrade = sum / dataReviews.Count();
 
-            //view
             string queryCategories = "SELECT * " +
                 "FROM platforma.categoriesview cv " +
                 "WHERE cv.courseid = @p0";
@@ -318,6 +311,7 @@ namespace platforma.Controllers
                 lst.Add(collection.Description);
                 lst.Add(collection.Id);
                 object[] allItems = lst.ToArray();
+                //PROCEDURE
                 string queryCourses = "UPDATE platforma.courses c " +
                     "SET name = @p0, description = @p1 " +
                     "WHERE id = @p2 ";

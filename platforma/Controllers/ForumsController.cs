@@ -56,6 +56,7 @@ namespace platforma.Controllers
                 {
                     int studentId = (int)Session["studentId"];
                     int forumId = (int)Session["forumId"];
+                    //PROCEDURE
                     string queryAddComment = "INSERT INTO platforma.forums_students(forumid, studentid, comment) " +
                         "VALUES(" + forumId + ", " + studentId + ", \'" + newComment.Comment + "\')" ;
                     int output = db.Database.ExecuteSqlCommand(queryAddComment);
@@ -65,6 +66,7 @@ namespace platforma.Controllers
                 {
                     int instructorId = (int)Session["instructorId"];
                     int forumId = (int)Session["forumId"];
+                    //PROCEDURE
                     string queryAddComment = "INSERT INTO platforma.forums_instructors(forumid, instructorid, comment) " +
                         "VALUES(" + forumId + ", " + instructorId + ", \'" + newComment.Comment + "\')";
                     int output = db.Database.ExecuteSqlCommand(queryAddComment);
@@ -91,6 +93,7 @@ namespace platforma.Controllers
         {
             try
             {
+                //PROCEDURE
                 string query = "INSERT INTO platforma.forums(description) " +
                     "VALUES (@p0)";
                 int output = db.Database.ExecuteSqlCommand(query, newForum.Description);
@@ -103,48 +106,5 @@ namespace platforma.Controllers
             }
         }
 
-        // GET: Forums/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Forums/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Forums/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Forums/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

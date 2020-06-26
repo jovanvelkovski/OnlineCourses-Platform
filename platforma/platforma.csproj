@@ -210,7 +210,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Controllers\VideosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -332,9 +331,7 @@
     <Content Include="Views\Users\RegisterStudent.cshtml" />
     <Content Include="Views\Users\RegisterInstructor.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Videos\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

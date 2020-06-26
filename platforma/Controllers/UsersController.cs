@@ -11,6 +11,7 @@ namespace platforma.Controllers
     public class UsersController : Controller
     {
         DataContext db = new DataContext();
+
         // GET: Users/Register
         public ActionResult Register()
         {
@@ -32,6 +33,7 @@ namespace platforma.Controllers
                 lst.Add(newUser.Password);
                 object[] allItems = lst.ToArray();
 
+                //PROCEDURE
                 string registerQueryUser = "INSERT INTO platforma.users(firstname, lastname, sex, email, username, password) " +
                     "VALUES (@p0, @p1, @p2, @p3, @p4, @p5) ";
 
@@ -68,6 +70,7 @@ namespace platforma.Controllers
             try
             {
                 int id = (int)Session["userId"];
+                //PROCEDURE
                 string registerStudent = "INSERT INTO platforma.students(userid, age, country) " +
                     "VALUES (" + id + ", " + student.Age + ", \'" + student.Country + "\')";
                 int output = db.Database.ExecuteSqlCommand(registerStudent);
@@ -93,6 +96,7 @@ namespace platforma.Controllers
             try
             {
                 int id = (int)Session["userId"];
+                //PROCEDURE
                 string registerInstructor = "INSERT INTO platforma.instructors(userid, age, country, adminid) " +
                     "VALUES (" + id + ", " + instructor.Age + ", \'" + instructor.Country + "\', 1)"; 
                 int output = db.Database.ExecuteSqlCommand(registerInstructor);

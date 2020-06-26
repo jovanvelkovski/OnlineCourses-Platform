@@ -48,13 +48,16 @@
 </div>
 <p>
     @{
-        if (Session["userType"].Equals("student"))
+        if (Session["userType"] != null)
         {
-            @Html.ActionLink("Buy Course", "BuyCourse", new { id = Model.Id })
-        }
-        if (Session["userType"].Equals("instructor"))
-        {
-            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+            if (Session["userType"].Equals("student"))
+            {
+                @Html.ActionLink("Buy Course", "BuyCourse", new { id = Model.Id })
+            }
+            if (Session["userType"].Equals("instructor"))
+            {
+                @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+            }
         }
     }
     @Html.ActionLink("Back to List", "Index")
