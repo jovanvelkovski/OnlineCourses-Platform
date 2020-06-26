@@ -152,16 +152,15 @@ namespace platforma.Controllers
             try
             {
                 //course attributes
+
                 List<object> lst = new List<object>();
                 int instructorId = (int)Session["instructorId"];
                 lst.Add(instructorId);
                 lst.Add(collection.Name);
                 lst.Add(collection.Description);
                 object[] allItems = lst.ToArray();
-                //PROCEDURE
-                string queryCourses = "INSERT INTO platforma.courses(instructorid, name, description) " +
-                    "VALUES (@p0, @p1, @p2)";        
-                int outputCourses = db.Database.ExecuteSqlCommand(queryCourses, allItems);
+                string queryCourses = "CALL platforma.insert_course(" + instructorId + ", \'" + collection.Name + "\', \'" + collection.Description + "\')";
+                int outputCourses = db.Database.ExecuteSqlCommand(queryCourses);
 
                 //find the new course
                 string courseQuery = "SELECT c.*, 0 as price, 0 as avgGrade, c.name as Categories " +
@@ -179,54 +178,34 @@ namespace platforma.Controllers
                         "FROM platforma.categories c " +
                         "WHERE c.name = \'" + categories[i] + "\'";
                     var cat = db.Categories.SqlQuery(queryCategory).SingleOrDefault();
-
-                    //PROCEDURE
-                    string queryInsert = "INSERT INTO platforma.category_courses(courseid, categoryid) " +
-                        "VALUES (" + newCourse.Id + ", " + cat.Id + ") ";
+                    string queryInsert = "CALL platforma.insert_category_course(" + newCourse.Id + ", " + cat.Id + ")";
                     int outputQuery = db.Database.ExecuteSqlCommand(queryInsert);
                 }
 
-                //video attributes
-                //PROCEDURE
-                string queryVideos = "INSERT INTO platforma.videos(courseid, name, pathvideo, pathimg) " +
-                    "VALUES (@p0, @p1, @p2, @p3) ";
+                string queryPrices = "CALL priceCourse(" + newCourse.Id + ", " + collection.Price + ");";
+                int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
+                //videos
                 foreach (Video v in collection.Videos)
                 {
                     if (v.Name is null || v.Name == "")
                     {
                         break;
                     }
-                    List<object> lista = new List<object>();
-                    lista.Add(newCourse.Id);
-                    lista.Add(v.Name);
-                    lista.Add(v.PathVideo);
-                    lista.Add(v.PathImg);
-                    object[] listaO = lista.ToArray();
-                    int outputVideos = db.Database.ExecuteSqlCommand(queryVideos, listaO);
+                    string queryVideos = "CALL platforma.insert_video(" + newCourse.Id + ", \'" + v.Name + "\', \'" + v.PathVideo + "\', \'" + v.PathImg + "\')";
+                    int outputVideos = db.Database.ExecuteSqlCommand(queryVideos);
                 }
 
-                //document attributes
-                //PROCEDURE
-                string queryDocuments = "INSERT INTO platforma.documents(courseid, name, path) " +
-                    "VALUES (@p0, @p1, @p2) ";
-
+                //documents
                 foreach (Document d in collection.Documents)
                 {
                     if (d.Name is null || d.Name == "")
                     {
                         break;
                     }
-                    List<object> lista = new List<object>();
-                    lista.Add(newCourse.Id);
-                    lista.Add(d.Name);
-                    lista.Add(d.Path);
-                    object[] listaO = lista.ToArray();
-                    int outputDocuments = db.Database.ExecuteSqlCommand(queryDocuments, listaO);
+                    string queryDocuments = "CALL platforma.insert_document(" + newCourse.Id + ", \'" + d.Name + "\', \'" + d.Path + "\')";
+                    int outputDocuments = db.Database.ExecuteSqlCommand(queryDocuments);
                 }
-
-                string queryPrices = "CALL priceCourse(" + newCourse.Id + ", " + collection.Price + ");";
-                int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
                 return RedirectToAction("Index");
             }
@@ -311,13 +290,9 @@ namespace platforma.Controllers
                 lst.Add(collection.Description);
                 lst.Add(collection.Id);
                 object[] allItems = lst.ToArray();
-                //PROCEDURE
-                string queryCourses = "UPDATE platforma.courses c " +
-                    "SET name = @p0, description = @p1 " +
-                    "WHERE id = @p2 ";
-                int outputCourses = db.Database.ExecuteSqlCommand(queryCourses, allItems);
+                string queryCourse = "CALL platforma.update_course(\'" + collection.Name + "\', \'" + collection.Description + "\', " + collection.Id + ")";
+                int outputCourse = db.Database.ExecuteSqlCommand(queryCourse);
 
-                //price
                 string queryPrices = "CALL priceCourse(" + collection.Id + ", " + collection.Price + ");";
                 int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
