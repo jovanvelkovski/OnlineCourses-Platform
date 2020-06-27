@@ -11,6 +11,7 @@ namespace platforma.Controllers
     public class ForumsController : Controller
     {
         DataContext db = new DataContext();
+
         // GET: Forums
         public ActionResult Index()
         {
@@ -35,30 +36,28 @@ namespace platforma.Controllers
                 "WHERE f.id = @p0 ";
             var data = db.Forums.SqlQuery(query, id).SingleOrDefault();
             data.Comments = comments;
+
             return View(data);
         }
 
-        // GET: Forums/AddComment
+        // GET: Forums/AddComment/5
         public ActionResult AddComment(int id)
         {
             Session["forumId"] = id;
             return View();
         }
 
-        // POST: Forums/AddComment
+        // POST: Forums/AddComment/5
         [HttpPost]
         public ActionResult AddComment(ForumComment newComment)
         {
-            // instruktor ili student
             try
             {
                 if (Session["studentId"] != null)
                 {
                     int studentId = (int)Session["studentId"];
                     int forumId = (int)Session["forumId"];
-                    //PROCEDURE
-                    string queryAddComment = "INSERT INTO platforma.forums_students(forumid, studentid, comment) " +
-                        "VALUES(" + forumId + ", " + studentId + ", \'" + newComment.Comment + "\')" ;
+                    string queryAddComment = string.Format("CALL platforma.add_forum_comment_as_a_student({0}, {1}, \'{2}\')", forumId, studentId, newComment.Comment);
                     int output = db.Database.ExecuteSqlCommand(queryAddComment);
 
                 }
@@ -66,9 +65,7 @@ namespace platforma.Controllers
                 {
                     int instructorId = (int)Session["instructorId"];
                     int forumId = (int)Session["forumId"];
-                    //PROCEDURE
-                    string queryAddComment = "INSERT INTO platforma.forums_instructors(forumid, instructorid, comment) " +
-                        "VALUES(" + forumId + ", " + instructorId + ", \'" + newComment.Comment + "\')";
+                    string queryAddComment = string.Format("CALL platforma.add_forum_comment_as_an_instructor({0}, {1}, \'{2}\')", forumId, instructorId, newComment.Comment);
                     int output = db.Database.ExecuteSqlCommand(queryAddComment);
                 }
 
@@ -93,10 +90,8 @@ namespace platforma.Controllers
         {
             try
             {
-                //PROCEDURE
-                string query = "INSERT INTO platforma.forums(description) " +
-                    "VALUES (@p0)";
-                int output = db.Database.ExecuteSqlCommand(query, newForum.Description);
+                string queryCreate = string.Format("CALL platforma.insert_forum(\'{0}\')", newForum.Description);
+                int output = db.Database.ExecuteSqlCommand(queryCreate);
 
                 return RedirectToAction("Index");
             }
