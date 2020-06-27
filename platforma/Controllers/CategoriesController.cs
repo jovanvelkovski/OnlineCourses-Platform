@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Razor.Text;
@@ -54,7 +55,7 @@ namespace platforma.Controllers
         {
             try
             {
-                string queryInsert = "CALL platforma.insert_category(\'" + collection.Name + "\')";
+                string queryInsert = string.Format("CALL platforma.insert_category(\'{0}\')", collection.Name);
                 int output = db.Database.ExecuteSqlCommand(queryInsert);
 
                 return RedirectToAction("Index");
@@ -82,7 +83,7 @@ namespace platforma.Controllers
         {
             try
             {
-                string queryUpdate = "CALL platforma.update_category(\'" + collection.Name + "\', " + collection.Id + ")";
+                string queryUpdate = string.Format("CALL platforma.update_category(\'{0}\', {1})", collection.Name, collection.Id);
                 int output = db.Database.ExecuteSqlCommand(queryUpdate);
 
                 return RedirectToAction("Index");
