@@ -284,12 +284,6 @@ namespace platforma.Controllers
         {
             try
             {
-                //course
-                List<object> lst = new List<object>();
-                lst.Add(collection.Name);
-                lst.Add(collection.Description);
-                lst.Add(collection.Id);
-                object[] allItems = lst.ToArray();
                 string queryCourse = string.Format("CALL platforma.update_course(\'{0}\', \'{1}\', {2})", collection.Name, collection.Description, collection.id);
                 int outputCourse = db.Database.ExecuteSqlCommand(queryCourse);
 
