@@ -284,7 +284,7 @@ namespace platforma.Controllers
         {
             try
             {
-                string queryCourse = string.Format("CALL platforma.update_course(\'{0}\', \'{1}\', {2})", collection.Name, collection.Description, collection.id);
+                string queryCourse = string.Format("CALL platforma.update_course(\'{0}\', \'{1}\', {2})", collection.Name, collection.Description, collection.Id);
                 int outputCourse = db.Database.ExecuteSqlCommand(queryCourse);
 
                 string queryPrices = string.Format("CALL priceCourse({0}, {1})", collection.Id, collection.Price);
