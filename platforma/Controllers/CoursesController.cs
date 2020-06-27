@@ -52,13 +52,13 @@ namespace platforma.Controllers
         public ActionResult BuyCourse(int id)
         {
             int studentId = (int)Session["studentId"];
-            string query = "SELECT platforma.checkBoughtCourse(" + studentId + ", " + id + ")";
+            string query = string.Format("SELECT platforma.checkBoughtCourse({0}, {1})", studentId, id);
             int output = db.Database.ExecuteSqlCommand(query);
             if (output != 1)
             {
                 string queryPrice = "SELECT * FROM platforma.prices p WHERE p.courseid = " + id;
                 var price = db.Prices.SqlQuery(queryPrice).SingleOrDefault();
-                string queryProc = "SELECT platforma.student_buys_course(" + studentId + ", " + price.Price + ", " + id + ")";
+                string queryProc = string.Format("SELECT platforma.student_buys_course({0}, {1}, {2})", studentId, price.Price, id);
                 int output2 = db.Database.ExecuteSqlCommand(queryProc);
             }
             return RedirectToAction("MyCourses", "Courses");
@@ -94,7 +94,7 @@ namespace platforma.Controllers
         public ActionResult WatchCourse(int id)
         {
             int studentId = (int)Session["studentId"];
-            string queryBC = "SELECT platforma.checkBoughtCourse(" + studentId + ", " + id + ")";
+            string queryBC = string.Format("SELECT platforma.checkBoughtCourse({0}, {1})", studentId, id);
             int output = db.Database.ExecuteSqlCommand(queryBC);
 
             string query = "SELECT c.*, 0 AS price, 0 AS AvgGrade, c.name as Categories " +
@@ -159,7 +159,7 @@ namespace platforma.Controllers
                 lst.Add(collection.Name);
                 lst.Add(collection.Description);
                 object[] allItems = lst.ToArray();
-                string queryCourses = "CALL platforma.insert_course(" + instructorId + ", \'" + collection.Name + "\', \'" + collection.Description + "\')";
+                string queryCourses = string.Format("CALL platforma.insert_course({0}, \'{1}\', \'{2}\')", instructorId, collection.Name, collection.Description);
                 int outputCourses = db.Database.ExecuteSqlCommand(queryCourses);
 
                 //find the new course
@@ -178,11 +178,11 @@ namespace platforma.Controllers
                         "FROM platforma.categories c " +
                         "WHERE c.name = \'" + categories[i] + "\'";
                     var cat = db.Categories.SqlQuery(queryCategory).SingleOrDefault();
-                    string queryInsert = "CALL platforma.insert_category_course(" + newCourse.Id + ", " + cat.Id + ")";
+                    string queryInsert = string.Format("CALL platforma.insert_category_course({0}, {1})", newCourse.Id, cat.Id);
                     int outputQuery = db.Database.ExecuteSqlCommand(queryInsert);
                 }
 
-                string queryPrices = "CALL priceCourse(" + newCourse.Id + ", " + collection.Price + ");";
+                string queryPrices = string.Format("CALL priceCourse({0}, {1})", newCourse.Id, collection.Price);
                 int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
                 //videos
@@ -192,7 +192,7 @@ namespace platforma.Controllers
                     {
                         break;
                     }
-                    string queryVideos = "CALL platforma.insert_video(" + newCourse.Id + ", \'" + v.Name + "\', \'" + v.PathVideo + "\', \'" + v.PathImg + "\')";
+                    string queryVideos = string.Format("CALL platforma.insert_video({0}, \'{1}\', \'{2}\', \'{3}\')", newCourse.Id, v.Name, v.PathVideo, v.PathImg);
                     int outputVideos = db.Database.ExecuteSqlCommand(queryVideos);
                 }
 
@@ -203,7 +203,7 @@ namespace platforma.Controllers
                     {
                         break;
                     }
-                    string queryDocuments = "CALL platforma.insert_document(" + newCourse.Id + ", \'" + d.Name + "\', \'" + d.Path + "\')";
+                    string queryDocuments = string.Format("CALL platforma.insert_document({0}, \'{1}\', \'{2}\')", newCourse.Id, d.Name, d.Path);
                     int outputDocuments = db.Database.ExecuteSqlCommand(queryDocuments);
                 }
 
@@ -290,10 +290,10 @@ namespace platforma.Controllers
                 lst.Add(collection.Description);
                 lst.Add(collection.Id);
                 object[] allItems = lst.ToArray();
-                string queryCourse = "CALL platforma.update_course(\'" + collection.Name + "\', \'" + collection.Description + "\', " + collection.Id + ")";
+                string queryCourse = string.Format("CALL platforma.update_course(\'{0}\', \'{1}\', {2})", collection.Name, collection.Description, collection.id);
                 int outputCourse = db.Database.ExecuteSqlCommand(queryCourse);
 
-                string queryPrices = "CALL priceCourse(" + collection.Id + ", " + collection.Price + ");";
+                string queryPrices = string.Format("CALL priceCourse({0}, {1})", collection.Id, collection.Price);
                 int outputPrices = db.Database.ExecuteSqlCommand(queryPrices);
 
                 return RedirectToAction("Index");
