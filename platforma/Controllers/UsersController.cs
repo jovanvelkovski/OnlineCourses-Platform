@@ -24,23 +24,13 @@ namespace platforma.Controllers
         {
             try
             {
-                List<object> lst = new List<object>();
-                lst.Add(newUser.FirstName);
-                lst.Add(newUser.LastName);
-                lst.Add(newUser.Sex);
-                lst.Add(newUser.Email);
-                lst.Add(newUser.Username);
-                lst.Add(newUser.Password);
-                object[] allItems = lst.ToArray();
+                string queryRegisterUser = string.Format("CALL platforma.register_user(\'{0}\', \'{1}\', \'{2}\', \'{3}\', \'{4}\', \'{5}\')",
+                    newUser.FirstName, newUser.LastName, newUser.Sex, newUser.Email, newUser.Username, newUser.Password);
 
-                //PROCEDURE
-                string registerQueryUser = "INSERT INTO platforma.users(firstname, lastname, sex, email, username, password) " +
-                    "VALUES (@p0, @p1, @p2, @p3, @p4, @p5) ";
+                int output = db.Database.ExecuteSqlCommand(queryRegisterUser);
 
-                int output = db.Database.ExecuteSqlCommand(registerQueryUser, allItems);
-
-                string queryGetId = "SELECT * FROM platforma.users WHERE username=\'" + newUser.Username + "\'";
-                var user = db.Users.SqlQuery(queryGetId).SingleOrDefault();
+                string queryUserId = string.Format("SELECT * FROM platforma.users WHERE username=\'{0}\'", newUser.Username);
+                var user = db.Users.SqlQuery(queryUserId).SingleOrDefault();
                 Session["userId"] = user.Id;
 
                 return RedirectToAction("ChooseUserType");
@@ -70,10 +60,8 @@ namespace platforma.Controllers
             try
             {
                 int id = (int)Session["userId"];
-                //PROCEDURE
-                string registerStudent = "INSERT INTO platforma.students(userid, age, country) " +
-                    "VALUES (" + id + ", " + student.Age + ", \'" + student.Country + "\')";
-                int output = db.Database.ExecuteSqlCommand(registerStudent);
+                string queryRegisterStudent = string.Format("CALL platforma.register_as_a_student({0}, {1}, \'{2}\')", id, student.Age, student.Country);
+                int output = db.Database.ExecuteSqlCommand(queryRegisterStudent);
 
                 return RedirectToAction("Login", "Users");
             }
@@ -96,10 +84,8 @@ namespace platforma.Controllers
             try
             {
                 int id = (int)Session["userId"];
-                //PROCEDURE
-                string registerInstructor = "INSERT INTO platforma.instructors(userid, age, country, adminid) " +
-                    "VALUES (" + id + ", " + instructor.Age + ", \'" + instructor.Country + "\', 1)"; 
-                int output = db.Database.ExecuteSqlCommand(registerInstructor);
+                string queryRegisterInstructor = string.Format("CALL platforma.register_as_an_instructor({0}, {1}, \'{2}\')", id, instructor.Age, instructor.Country);
+                int output = db.Database.ExecuteSqlCommand(queryRegisterInstructor);
 
                 return RedirectToAction("Login", "Users");
             }
@@ -108,7 +94,6 @@ namespace platforma.Controllers
                 return View();
             }
         }
-
 
         // GET: Users/Login
         public ActionResult Login()
@@ -122,8 +107,8 @@ namespace platforma.Controllers
         {
             try
             {
-                string query = "SELECT platforma.checkUser(\'" + user.Username + "\', \'" + user.Password + "\')";
-                int loginSuccessful = db.Database.ExecuteSqlCommand(query);
+                string queryCheckUser = string.Format("SELECT platforma.checkUser(\'{0}\', \'{1}\')", user.Username, user.Password);
+                int loginSuccessful = db.Database.ExecuteSqlCommand(queryCheckUser);
                 if (loginSuccessful != 0)
                 {
                     string queryName = "SELECT * " +
